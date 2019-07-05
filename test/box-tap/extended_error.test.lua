@@ -4,8 +4,12 @@ local netbox = require('net.box')
 local os = require('os')
 local tap = require('tap')
 
+local LISTEN_SOCKET = 'extended_error.listen.sock'
+
+os.remove(LISTEN_SOCKET)
 box.cfg{
-    listen = os.getenv('LISTEN')
+    listen = os.getenv('LISTEN');
+    listen = 'unix/:./' .. LISTEN_SOCKET,
 }
 
 --
@@ -147,4 +151,5 @@ test:ok(check_error(err2, checks2), "Second error in the stack in iproto fields"
 c:close()
 box.schema.user.revoke('guest', 'super')
 
+os.remove(LISTEN_SOCKET)
 os.exit(test:check() and 0 or 1)
