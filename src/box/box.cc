@@ -76,6 +76,7 @@
 #include "func.h"
 #include "sequence.h"
 #include "sql_stmt_cache.h"
+#include "msgpack.h"
 
 static char status[64] = "unknown";
 
@@ -2355,6 +2356,7 @@ on_wal_checkpoint_threshold(void)
 void
 box_init(void)
 {
+	msgpack_init();
 	fiber_cond_create(&ro_cond);
 
 	user_cache_init();
