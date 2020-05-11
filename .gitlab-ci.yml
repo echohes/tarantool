@@ -1,5 +1,6 @@
 stages:
   - test
+  - integr_test
   - perf
   - cleanup
 
@@ -102,6 +103,12 @@ release:
   <<: *docker_test_definition
   script:
     - ${GITLAB_MAKE} test_debian_no_deps
+
+release_integr_test:
+  <<: *docker_test_definition
+  stage: integr_test
+  script:
+    - ${GITLAB_MAKE} test_inttegr_debian_no_deps
 
 #debug:
 #  <<: *docker_test_definition

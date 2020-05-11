@@ -82,17 +82,26 @@ build_debian:
 
 test_debian_no_deps: build_debian
 	cd test && /usr/bin/python test-run.py --force $(TEST_RUN_EXTRA_PARAMS)
-	pwd
-	ls -la
-	git clone https://github.com/tarantool/tarantool-python.git tarantool-python
-	pip install --user git+https://github.com/tarantool/tarantool-python.git@master
-	pwd
-	ls -la
-	cd tarantool-python && /usr/bin/python setup.py test
+#	pwd
+#	ls -la
+#	git clone https://github.com/tarantool/tarantool-python.git tarantool-python
+#	pip install --user git+https://github.com/tarantool/tarantool-python.git@master
+#	pwd
+#	ls -la
+#	cd tarantool-python && /usr/bin/python setup.py test
 
 test_debian: deps_debian test_debian_no_deps
 
 test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
+
+test_integr_debian_no_deps: build_debian
+	pwd
+	ls -la
+	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
+	apt-get update
+	apt-get install -y python3.6 python3-pip python3.6-dev
+	python3.6 -V
+	cd asynctnt-python && make python3.6 &&  pip3 install -e . && make quicktest
 
 # Debug with coverage
 
