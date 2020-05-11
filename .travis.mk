@@ -95,16 +95,11 @@ test_debian: deps_debian test_debian_no_deps
 test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
 
 test_integr_debian_no_deps: build_debian
-	apt-get install -y python3-pip python3-dev
-	apt-get install -y pandoc python3-setuptools
-	python3 -V
-	pip3 -V
+	make install
+	apt-get install -y python3-pip python3-dev pandoc python3-setuptools
 	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
-	cd asynctnt-python && git submodule update --init 
-	cd asynctnt-python && pip3 install -r requirements.txt
-	cd asynctnt-python && PYTHON=python3 make
-	cd asynctnt-python && pip3 install -e .
-	cd asynctnt-python && PYTHON=python3 make quicktest
+	cd asynctnt-python && git submodule update --init && pip3 install -r requirements.txt \
+		&& PYTHON=python3 make && pip3 install -e . && PYTHON=python3 make quicktest
 
 # Debug with coverage
 
