@@ -97,11 +97,17 @@ test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
 test_integr_debian_no_deps: build_debian
 	pwd
 	ls -la
-	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
+	which python
+	python -V
+	which pip
+	pip -V
+	add-apt-repository ppa:deadsnakes/ppa
 	apt-get update
-	apt-get install -y python3.6 python3-pip python3.6-dev
-	python3.6 -V
-	cd asynctnt-python && make python3.6 &&  pip3 install -e . && make quicktest
+	apt-get install -y python3 python3-pip python3-dev
+	python3 -V
+	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
+	cd asynctnt-python && git submodule update --init && make python3.6 \
+		&&  pip3 install -e . && make quicktest
 
 # Debug with coverage
 
