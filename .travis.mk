@@ -100,14 +100,11 @@ test_integr_debian_no_deps: build_debian
 	python3 -V
 	pip3 -V
 	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
-	cd asynctnt-python 
-	git submodule update --init 
-	pwd
-	ls -la
-	pip3 install -r requirements.txt
-	PYTHON=python3 make
-	pip3 install -e .
-	PYTHON=python3 make quicktest
+	cd asynctnt-python && git submodule update --init 
+	cd asynctnt-python && pip3 install -r requirements.txt
+	cd asynctnt-python && PYTHON=python3 make
+	cd asynctnt-python && pip3 install -e .
+	cd asynctnt-python && PYTHON=python3 make quicktest
 
 # Debug with coverage
 
