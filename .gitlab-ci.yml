@@ -108,7 +108,7 @@ release_integr_test:
   <<: *docker_test_definition
   stage: integr_test
   script:
-    - ${GITLAB_MAKE} test_inttegr_debian_no_deps
+    - ${GITLAB_MAKE} test_integr_debian_no_deps
 
 #debug:
 #  <<: *docker_test_definition
