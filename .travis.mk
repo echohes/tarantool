@@ -94,12 +94,59 @@ test_debian: deps_debian test_debian_no_deps
 
 test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
 
-test_integr_debian_no_deps: build_debian
+# Integration testing
+
+test_connector_python_asynctnt: build_debian
 	make install
 	apt-get install -y python3-pip python3-dev pandoc python3-setuptools
+	python3 -V && pip3 -V
 	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
 	cd asynctnt-python && git submodule update --init && pip3 install -r requirements.txt \
 		&& PYTHON=python3 make && pip3 install -e . && PYTHON=python3 make quicktest
+
+test_connector_python_tarantool: build_debian
+	make install
+	python -V && pip3 -V
+	git clone https://github.com/tarantool/tarantool-python.git tarantool-python
+	cd tarantool-python && pip install -r requirements.txt && python setup.py install \
+		&& python setup.py test
+
+test_connector_go_tarantool: build_debian
+	make install
+	wget https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
+	tar -xvf go1.14.2.linux-amd64.tar.gz && mv go /usr/local
+	export GOROOT=/usr/local/go
+	export PATH=$GOROOT/bin:$PATH
+	export GOPATH="/usr/local/go/go-tarantool"
+	go version
+
+test_connector_go_viciious: build_debian
+	make install
+	wget https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
+	tar -xvf go1.14.2.linux-amd64.tar.gz && mv go /usr/local
+	export GOROOT=/usr/local/go
+	export PATH=$GOROOT/bin:$PATH
+	export GOPATH="/usr/local/go/go-tarantool"
+	go version
+
+test_connector_php_tarantool: build_debian
+	make install
+	apt-get update
+	apt-get install -y apt-transport-https lsb-release ca-certificates
+	wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+	echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
+	apt-get update && apt-get install -y php5.6-cli php5.6-dev php-pear php5.6-xml
+	php -version
+	git clone https://github.com/tarantool/tarantool-php.git tarantool-php
+	cd tarantool-php && phpize && ./configure && make && make install \
+		&& /usr/bin/python test-run.py
+
+test_connector_java_tarantool: build_debian
+	make install
+	apt-get update && apt-get install -y openjdk-8-jre openjdk-8-jdk
+	java -version && tarantool -V && which tarantoolctl
+	git clone https://github.com/tarantool/tarantool-java.git tarantool-java
+	cd tarantool-java && ./mvnw clean test && ./mvnw clean verify
 
 # Debug with coverage
 
