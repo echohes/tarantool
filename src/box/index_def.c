@@ -256,10 +256,10 @@ index_def_to_key_def(struct rlist *index_defs, int *size)
 	rlist_foreach_entry(index_def, index_defs, link)
 		key_count++;
 	size_t sz = sizeof(struct key_def *) * key_count;
-	struct key_def **keys = (struct key_def **) region_alloc(&fiber()->gc,
-								 sz);
+	struct key_def **keys = (struct key_def **)
+		region_aligned_alloc(&fiber()->gc, sz, alignof(keys[0]));
 	if (keys == NULL) {
-		diag_set(OutOfMemory, sz, "region_alloc", "keys");
+		diag_set(OutOfMemory, sz, "region_aligned_alloc", "keys");
 		return NULL;
 	}
 	*size = key_count;

@@ -239,6 +239,19 @@ strnindex(const char **haystack, const char *needle, uint32_t len, uint32_t hmax
 #  endif
 #endif
 
+/**
+ * Round up @a size to the nearest value divisible by
+ * @a alignment. Alignment must be a power of 2.
+ */
+static inline size_t
+alignby(size_t size, size_t alignment)
+{
+	/* Must be a power of two */
+	assert((alignment & (alignment - 1)) == 0);
+	assert(size <= SIZE_MAX - alignment);
+	return (size - 1 + alignment) & ~(alignment - 1);
+}
+
 /** Built-ins }}} */
 
 /**

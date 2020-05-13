@@ -72,7 +72,8 @@ space_def_sizeof(uint32_t name_len, const struct field_def *fields,
 		}
 	}
 
-	*fields_offset = sizeof(struct space_def) + name_len + 1;
+	*fields_offset = alignby(sizeof(struct space_def) + name_len + 1,
+				 alignof(typeof(fields[0])));
 	*names_offset = *fields_offset + field_count * sizeof(struct field_def);
 	*def_expr_offset = *names_offset + field_strs_size;
 	return *def_expr_offset + def_exprs_size;

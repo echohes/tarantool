@@ -621,11 +621,12 @@ vy_log_record_decode(struct vy_log_record *record,
 		case VY_LOG_KEY_DEF: {
 			struct region *region = &fiber()->gc;
 			uint32_t part_count = mp_decode_array(&pos);
-			struct key_part_def *parts = region_alloc(region,
-						sizeof(*parts) * part_count);
+			struct key_part_def *parts;
+			size_t size = sizeof(*parts) * part_count;
+			parts = region_aligned_alloc(region, size,
+						     alignof(parts[0]));
 			if (parts == NULL) {
-				diag_set(OutOfMemory,
-					 sizeof(*parts) * part_count,
+				diag_set(OutOfMemory, size,
 					 "region", "struct key_part_def");
 				return -1;
 			}
@@ -702,10 +703,10 @@ vy_log_record_dup(struct region *pool, const struct vy_log_record *src)
 {
 	size_t used = region_used(pool);
 
-	struct vy_log_record *dst = region_alloc(pool, sizeof(*dst));
+	struct vy_log_record *dst = region_alloc_object(pool, typeof(*dst));
 	if (dst == NULL) {
 		diag_set(OutOfMemory, sizeof(*dst),
-			 "region", "struct vy_log_record");
+			 "region_alloc_object", "struct vy_log_record");
 		goto err;
 	}
 	*dst = *src;

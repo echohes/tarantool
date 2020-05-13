@@ -193,9 +193,10 @@ ck_constraint_on_replace_trigger(struct trigger *trigger, void *event)
 	uint32_t field_ref_sz = sizeof(struct vdbe_field_ref) +
 				sizeof(uint32_t) * space->def->field_count;
 	struct vdbe_field_ref *field_ref =
-		region_alloc(&fiber()->gc, field_ref_sz);
+		region_aligned_alloc(&fiber()->gc, field_ref_sz,
+				     alignof(*field_ref));
 	if (field_ref == NULL) {
-		diag_set(OutOfMemory, field_ref_sz, "region_alloc",
+		diag_set(OutOfMemory, field_ref_sz, "region_aligned_alloc",
 			 "field_ref");
 		return -1;
 	}

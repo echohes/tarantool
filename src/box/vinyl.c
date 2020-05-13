@@ -602,8 +602,9 @@ vinyl_engine_create_space(struct engine *engine, struct space_def *def,
 	struct index_def *index_def;
 	rlist_foreach_entry(index_def, key_list, link)
 		key_count++;
-	struct key_def **keys = region_alloc(&fiber()->gc,
-					     sizeof(*keys) * key_count);
+	struct key_def **keys = region_aligned_alloc(&fiber()->gc,
+						     sizeof(*keys) * key_count,
+						     alignof(keys[0]));
 	if (keys == NULL) {
 		free(space);
 		return NULL;

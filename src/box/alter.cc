@@ -538,8 +538,8 @@ space_format_decode(const char *data, uint32_t *out_count,
 		return 0;
 	}
 	size_t size = count * sizeof(struct field_def);
-	struct field_def *region_defs =
-		(struct field_def *) region_alloc(region, size);
+	struct field_def *region_defs = (struct field_def *)
+		region_aligned_alloc(region, size, alignof(region_defs[0]));
 	if (region_defs == NULL) {
 		diag_set(OutOfMemory, size, "region", "struct field_def");
 		return -1;
@@ -2453,7 +2453,9 @@ on_replace_dd_space(struct trigger * /* trigger */, void *event)
 		 */
 		struct key_def **keys;
 		size_t bsize = old_space->index_count * sizeof(keys[0]);
-		keys = (struct key_def **) region_alloc(&fiber()->gc, bsize);
+		keys = (struct key_def **)
+			region_aligned_alloc(&fiber()->gc, bsize,
+					     alignof(keys[0]));
 		if (keys == NULL) {
 			diag_set(OutOfMemory, bsize, "region", "new slab");
 			return -1;
@@ -2734,7 +2736,9 @@ on_replace_dd_index(struct trigger * /* trigger */, void *event)
 		 */
 		struct key_def **keys;
 		size_t bsize = old_space->index_count * sizeof(keys[0]);
-		keys = (struct key_def **) region_alloc(&fiber()->gc, bsize);
+		keys = (struct key_def **)
+			region_aligned_alloc(&fiber()->gc, bsize,
+					     alignof(keys[0]));
 		if (keys == NULL) {
 			diag_set(OutOfMemory, bsize, "region", "new slab");
 			return -1;
@@ -5010,8 +5014,9 @@ decode_fk_links(struct tuple *tuple, uint32_t *out_count,
 	}
 	*out_count = count;
 	size_t size = count * sizeof(struct field_link);
-	struct field_link *region_links =
-		(struct field_link *)region_alloc(&fiber()->gc, size);
+	struct field_link *region_links = (struct field_link *)
+		region_aligned_alloc(&fiber()->gc, size,
+				     alignof(region_links[0]));
 	if (region_links == NULL) {
 		diag_set(OutOfMemory, size, "region", "struct field_link");
 		return NULL;

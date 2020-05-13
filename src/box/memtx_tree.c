@@ -804,8 +804,7 @@ struct func_key_undo {
 struct func_key_undo *
 func_key_undo_new(struct region *region)
 {
-	struct func_key_undo *undo =
-		(struct func_key_undo *)region_alloc(region, sizeof(*undo));
+	struct func_key_undo *undo = region_alloc_object(region, typeof(*undo));
 	if (undo == NULL) {
 		diag_set(OutOfMemory, sizeof(*undo), "region", "undo");
 		return NULL;

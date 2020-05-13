@@ -590,7 +590,7 @@ applier_read_tx_row(struct applier *applier)
 	struct ibuf *ibuf = &applier->ibuf;
 
 	struct applier_tx_row *tx_row = (struct applier_tx_row *)
-		region_alloc(&fiber()->gc, sizeof(struct applier_tx_row));
+		region_alloc_object(&fiber()->gc, typeof(*tx_row));
 
 	if (tx_row == NULL)
 		tnt_raise(OutOfMemory, sizeof(struct applier_tx_row),
@@ -808,13 +808,13 @@ applier_apply_tx(struct stailq *rows)
 
 	/* We are ready to submit txn to wal. */
 	struct trigger *on_rollback, *on_commit;
-	on_rollback = (struct trigger *)region_alloc(&txn->region,
-						     sizeof(struct trigger));
-	on_commit = (struct trigger *)region_alloc(&txn->region,
-						   sizeof(struct trigger));
+	on_rollback = (struct trigger *)
+		region_alloc_object(&txn->region, typeof(*on_rollback));
+	on_commit = (struct trigger *)
+		region_alloc_object(&txn->region, typeof(*on_commit));
 	if (on_rollback == NULL || on_commit == NULL) {
 		diag_set(OutOfMemory, sizeof(struct trigger),
-			 "region_alloc", "on_rollback/on_commit");
+			 "region_alloc_object", "on_rollback/on_commit");
 		goto rollback;
 	}
 

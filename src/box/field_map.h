@@ -33,6 +33,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stddef.h>
+#include "bit/bit.h"
 
 struct region;
 struct field_map_builder_slot;
@@ -151,20 +152,17 @@ static inline uint32_t
 field_map_get_offset(const uint32_t *field_map, int32_t offset_slot,
 		     int multikey_idx)
 {
-	uint32_t offset;
-	if (multikey_idx != MULTIKEY_NONE &&
-	    (int32_t) field_map[offset_slot] < 0) {
+	uint32_t offset = load_u32(&field_map[offset_slot]);
+	if (multikey_idx != MULTIKEY_NONE && (int32_t)offset < 0) {
 		/**
 		 * The field_map extent has the following
 		 * structure: [size=N|slot1|slot2|..|slotN]
 		 */
 		uint32_t *extent = (uint32_t *)((char *)field_map +
-					(int32_t)field_map[offset_slot]);
+						(int32_t)offset);
 		if ((uint32_t)multikey_idx >= extent[0])
 			return 0;
 		offset = extent[multikey_idx + 1];
-	} else {
-		offset = field_map[offset_slot];
 	}
 	return offset;
 }
