@@ -113,21 +113,17 @@ test_connector_python_tarantool: build_debian
 
 test_connector_go_tarantool: build_debian
 	make install
-	wget https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
+	wget --progress=dot:mega https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
 	tar -xf go1.14.2.linux-amd64.tar.gz && mv go /usr/local
-	export GOROOT=/usr/local/go
-	export PATH=$$GOROOT/bin:$$PATH
-	export GOPATH="/usr/local/go/go-tarantool"
-	go version
+	export GOROOT=/usr/local/go && export PATH=$$GOROOT/bin:$$PATH \
+		&& export GOPATH="/usr/local/go/go-tarantool" && go version
 
 test_connector_go_viciious: build_debian
 	make install
-	wget https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
-	tar -xvf go1.14.2.linux-amd64.tar.gz && mv go /usr/local
-	export GOROOT=/usr/local/go
-	export PATH=$$GOROOT/bin:$$PATH
-	export GOPATH="/usr/local/go/go-tarantool"
-	go version
+	wget --progress=dot:mega https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
+	tar -xf go1.14.2.linux-amd64.tar.gz && mv go /usr/local
+	export GOROOT=/usr/local/go && export PATH=$$GOROOT/bin:$$PATH \
+		&& export GOPATH="/usr/local/go/go-tarantool" && go version
 
 test_connector_php_tarantool: build_debian
 	make install
