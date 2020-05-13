@@ -158,8 +158,8 @@ tt_uuid_bswap(struct tt_uuid *uu)
 inline bool
 tt_uuid_is_nil(const struct tt_uuid *uu)
 {
-	const uint64_t *p = (const uint64_t *) uu;
-	return !p[0] && !p[1];
+	const uint32_t *p = (const uint32_t *) uu;
+	return p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 0;
 }
 
 /**
@@ -172,9 +172,10 @@ tt_uuid_is_nil(const struct tt_uuid *uu)
 inline bool
 tt_uuid_is_equal(const struct tt_uuid *lhs, const struct tt_uuid *rhs)
 {
-	const uint64_t *lp = (const uint64_t *) lhs;
-	const uint64_t *rp = (const uint64_t *) rhs;
-	return lp[0] == rp[0] && lp[1] == rp[1];
+	const uint32_t *lp = (const uint32_t *) lhs;
+	const uint32_t *rp = (const uint32_t *) rhs;
+	return lp[0] == rp[0] && lp[1] == rp[1] && lp[2] == rp[2] &&
+	       lp[3] == rp[3];
 }
 
 extern const struct tt_uuid uuid_nil;
