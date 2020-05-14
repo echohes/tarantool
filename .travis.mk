@@ -96,14 +96,13 @@ test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
 
 # Integration testing
 
-test_module_vshard: build_debian
+test_module_vshard:
+	cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_WERROR=ON -DENABLE_DIST=ON ${CMAKE_EXTRA_PARAMS}
+	make -j
 	make install
-	pwd
-	ls -al
 	git clone https://github.com/tarantool/vshard.git /vshard
-	cd /vshard && git submodule update --init --recursive
-	cd /vshard && cmake . 
-	cd /vshard && make test
+	cd /vshard && git submodule update --init --recursive \
+		&& cmake . && make test
 
 test_connector_python_asynctnt: build_debian
 	make install
