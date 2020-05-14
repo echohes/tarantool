@@ -108,6 +108,12 @@ release:
 # Integration testing
 # ###################
 
+release_module_vshard_test:
+  <<: *docker_test_definition
+  stage: integr_test
+  script:
+    - ${GITLAB_MAKE} test_module_vshard
+
 release_connector_python_asynctnt_test:
   <<: *docker_test_definition
   stage: integr_test
