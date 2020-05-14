@@ -100,16 +100,19 @@ test_module_vshard: build_debian
 	make install
 	pwd
 	ls -al
-	git clone https://github.com/tarantool/vshard.git tarantool/vshard
-	cd tarantool/vshard && git submodule update --init --recursive
-	cd tarantool/vshard && cmake . 
-	cd tarantool/vshard && make test
+	git clone https://github.com/tarantool/vshard.git /vshard
+	cd /vshard && git submodule update --init --recursive
+	cd /vshard && cmake . 
+	cd /vshard && make test
 
 test_connector_python_asynctnt: build_debian
 	make install
 	apt-get install -y python3-pip python3-dev pandoc python3-setuptools
 	python3 -V && pip3 -V
 	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
+	cd asynctnt-python && git submodule update --init && pip3 install -r requirements.txt \
+		&& PYTHON=python3 make && pip3 install -e . && PYTHON=python3 make quicktest
+
 	cd asynctnt-python && git submodule update --init && pip3 install -r requirements.txt \
 		&& PYTHON=python3 make && pip3 install -e . && PYTHON=python3 make quicktest
 
@@ -191,9 +194,6 @@ test_asan_debian_no_deps: build_asan_debian
 	#    was set at the build time in cmake/profile.cmake file.
 	#  - To exclude tests from LSAN checks the asan/lsan.supp file
 	#    was set in environment options to be used at run time.
-	cd test && ASAN=ON \
-		LSAN_OPTIONS=suppressions=${PWD}/asan/lsan.supp \
-		ASAN_OPTIONS=heap_profile=0:unmap_shadow_on_exit=1:detect_invalid_pointer_pairs=1:symbolize=1:detect_leaks=1:dump_instruction_bytes=1:print_suppressions=0 \
 		./test-run.py --force $(TEST_RUN_EXTRA_PARAMS)
 
 test_asan_debian: deps_debian deps_buster_clang_8 test_asan_debian_no_deps
