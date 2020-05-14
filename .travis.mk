@@ -98,9 +98,12 @@ test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
 
 test_module_vshard: build_debian
 	make install
-	git clone https://github.com/tarantool/vshard.git vshard
-	cd vshard && git submodule update --init --recursive \
-		&& cmake . && make test
+	pwd
+	ls -al
+	git clone https://github.com/tarantool/vshard.git tarantool/vshard
+	cd tarantool/vshard && git submodule update --init --recursive
+	cd tarantool/vshard && cmake . 
+	cd tarantool/vshard && make test
 
 test_connector_python_asynctnt: build_debian
 	make install
