@@ -139,14 +139,17 @@ test_connector_go_viciious: build_debian
 test_connector_php_tarantool: build_debian
 	make install
 	apt-get update
-	apt-get install -y apt-transport-https lsb-release ca-certificates
+	apt-get install -y lsb-release
 	wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 	echo "deb https://packages.sury.org/php/ $$(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
-	apt-get update && apt-get install -y php5.6-cli php5.6-dev php-pear php5.6-xml
+	apt-get update && apt-get install -y php7.4 php7.4-dev php7.4-xml
 	php -version
+	curl -SsLf -o /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-9.phar
+	chmod a+x /usr/local/bin/phpunit
+	phpunit --version
 	git clone https://github.com/tarantool/tarantool-php.git tarantool-php
-	cd tarantool-php && phpize && ./configure && make && make install \
-		&& /usr/bin/python test-run.py
+	cd tarantool-php && git checkout php7-v2 && phpize && ./configure \
+		&& make && make install && /usr/bin/python test-run.py
 
 test_connector_java_tarantool:
 	cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_WERROR=ON -DENABLE_DIST=ON ${CMAKE_EXTRA_PARAMS}
