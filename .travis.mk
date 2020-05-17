@@ -87,6 +87,45 @@ test_debian: deps_debian test_debian_no_deps
 
 test_debian_clang8: deps_debian deps_buster_clang_8 test_debian_no_deps
 
+# Integration testing
+
+test_connector_python_asynctnt: build_debian
+	make install
+	apt-get install -y python3-pip python3-dev pandoc python3-setuptools
+	python3 -V && pip3 -V
+	git clone https://github.com/igorcoding/asynctnt.git asynctnt-python
+	cd asynctnt-python && git submodule update --init && pip3 install -r requirements.txt \
+		&& PYTHON=python3 make && pip3 install -e . && PYTHON=python3 make quicktest
+
+test_connector_python_tarantool: build_debian
+	make install
+	python -V && pip -V
+	git clone https://github.com/tarantool/tarantool-python.git tarantool-python
+	cd tarantool-python && pip install -r requirements.txt && python setup.py install \
+		&& python setup.py test
+
+test_connector_php_tarantool: build_debian
+	make install
+	apt-get update
+	apt-get install -y lsb-release
+	wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+	echo "deb https://packages.sury.org/php/ $$(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
+	apt-get update && apt-get install -y php7.4 php7.4-dev php7.4-xml
+	curl -SsLf -o /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-9.phar
+	chmod a+x /usr/local/bin/phpunit
+	git clone https://github.com/tarantool/tarantool-php.git tarantool-php
+	cd tarantool-php && git checkout php7-v2 && phpize && ./configure \
+		&& make && make install && /usr/bin/python test-run.py
+
+test_connector_java_tarantool:
+	cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_WERROR=ON -DENABLE_DIST=ON ${CMAKE_EXTRA_PARAMS}
+	make -j
+	make install
+	apt-get update && apt-get install -y openjdk-8-jre openjdk-8-jdk
+	java -version && tarantool -V && which tarantoolctl
+	git clone https://github.com/tarantool/tarantool-java.git tarantool-java
+	cd tarantool-java && ./mvnw clean test && ./mvnw clean verify
+
 # Debug with coverage
 
 build_coverage_debian:
