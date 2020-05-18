@@ -541,6 +541,8 @@ decode_r = function(data)
         return false
     elseif c == 0xc3 then
         return true
+    elseif c >= 0xd4 and c <= 0xd8 or c >= 0xc7 and c <= 0xc9 then
+        error(string.format("unsupported tuple type"))
     else
         local fun = decoder_hint[c];
         assert (type(fun) == "function")
