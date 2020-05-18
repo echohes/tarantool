@@ -269,10 +269,25 @@ module_load(const char *package, const char *package_end)
 	char load_name[PATH_MAX + 1];
 	snprintf(load_name, sizeof(load_name), "%s/%.*s." TARANTOOL_LIBEXT,
 		 dir_name, package_len, package);
-	if (symlink(path, load_name) < 0) {
-		diag_set(SystemError, "failed to create dso link");
+
+	FILE *source, *target;
+	source = fopen(path, "r");
+	if (source == NULL) {
+		diag_set(SystemError, "failed to open module file for reading");
 		goto error;
 	}
+	target = fopen(load_name, "w");
+	if (target == NULL) {
+		fclose(source);
+		diag_set(SystemError, "failed to open temporary file for writing");
+		goto error;
+	}
+	int ch;
+	while( ( ch = fgetc(source) ) != EOF )
+		fputc(ch, target);
+	fclose(source);
+	fclose(target);
+
 	module->handle = dlopen(load_name, RTLD_NOW | RTLD_LOCAL);
 	if (unlink(load_name) != 0)
 		say_warn("failed to unlink dso link %s", load_name);
