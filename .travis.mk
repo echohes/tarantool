@@ -124,7 +124,7 @@ test_connector_go_tarantool: build_debian
 	export PATH=/usr/local/go/bin:$$PATH && export=/usr/local/go/go-tarantool \
 		&& go get github.com/tarantool/go-tarantool \
 		&& cd /usr/local/go/go-tarantool/src/github.com/tarantool/go-tarantool \
-		&& mkdir snap xlog && tarantool config.lua & && go test -v .
+		&& mkdir snap xlog && (tarantool config.lua &) && go test -v .
 
 test_connector_go_viciious: build_debian
 	make install
