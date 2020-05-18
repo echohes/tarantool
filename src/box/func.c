@@ -261,14 +261,29 @@ module_load(const char *package, const char *package_end)
 	module->package[package_len] = 0;
 	rlist_create(&module->funcs);
 	module->calls = 0;
-	char dir_name[] = "/tmp/tntXXXXXX";
+
+	const char *tmpdir = getenv("TMPDIR");
+	if (tmpdir == NULL)
+		tmpdir = "/tmp";
+	char dir_name[PATH_MAX + 1];
+	int rc = snprintf(dir_name, sizeof(dir_name), "%s/tntXXXXXX", tmpdir);
+	if (rc < 0 || (size_t) rc >= sizeof(dir_name)) {
+		diag_set(SystemError, "failed to generate path to tmp dir");
+		goto error;
+	}
+
 	if (mkdtemp(dir_name) == NULL) {
-		diag_set(SystemError, "failed to create unique dir name");
+		diag_set(SystemError, "failed to create unique dir name: %s",
+			 dir_name);
 		goto error;
 	}
 	char load_name[PATH_MAX + 1];
-	snprintf(load_name, sizeof(load_name), "%s/%.*s." TARANTOOL_LIBEXT,
-		 dir_name, package_len, package);
+	rc = snprintf(load_name, sizeof(load_name), "%s/%.*s." TARANTOOL_LIBEXT,
+		      dir_name, package_len, package);
+	if (rc < 0 || (size_t) rc >= sizeof(dir_name)) {
+		diag_set(SystemError, "failed to generate path to DSO");
+		goto error;
+	}
 
 	FILE *source, *target;
 	source = fopen(path, "r");
