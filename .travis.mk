@@ -119,7 +119,7 @@ test_connector_python_tarantool: build_debian
 test_connector_go_tarantool: build_debian
 	make install
 	wget --progress=dot:mega https://dl.google.com/go/go1.10.linux-amd64.tar.gz
-	tar -C /usr/local -xzf go1.14.2.linux-amd64.tar.gz
+	tar -C /usr/local -xzf go1.10.linux-amd64.tar.gz
 	sudo chmod -R a+rwx /usr/local/go
 	export PATH=/usr/local/go/bin:$$PATH && export=/usr/local/go/go-tarantool \
 		&& go get github.com/tarantool/go-tarantool \
