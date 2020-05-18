@@ -121,7 +121,7 @@ test_connector_go_tarantool: build_debian
 	wget --progress=dot:mega https://dl.google.com/go/go1.10.linux-amd64.tar.gz
 	tar -C /usr/local -xzf go1.10.linux-amd64.tar.gz
 	chmod -R a+rwx /usr/local/go
-	export PATH=/usr/local/go/bin:$$PATH && export=/usr/local/go/go-tarantool \
+	export PATH=/usr/local/go/bin:$$PATH && export GOPATH=/usr/local/go/go-tarantool \
 		&& go get github.com/tarantool/go-tarantool \
 		&& cd /usr/local/go/go-tarantool/src/github.com/tarantool/go-tarantool \
 		&& mkdir snap xlog && (tarantool config.lua &) && go test -v .
