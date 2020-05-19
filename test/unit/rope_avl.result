@@ -1,4 +1,4 @@
-	*** test_avl_rotations ***
+# *** test_avl_rotations ***
 insert offset = 0, str = '1'
 size = 1
 string = '1'
@@ -120,4 +120,4 @@ string = '>*0*pppp12<'
       └──{ len = 1, height = 2, data = '2'}
          └──{ len = 1, height = 1, data = '<'}
 
-	*** test_avl_rotations: done ***
+# *** test_avl_rotations: done ***
