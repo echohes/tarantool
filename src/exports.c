@@ -93,9 +93,11 @@
  * even type to get that address. Even an integer global variable
  * can be referenced as extern void(*)(void).
  */
-#define EXPORT(symbol) extern void symbol(void);
+#define EXPORT_FUN(symbol) extern void symbol(void);
+#define EXPORT_VAR(symbol) extern void *symbol;
 #include "exports.h"
-#undef EXPORT
+#undef EXPORT_VAR
+#undef EXPORT_FUN
 
 void **
 export_syms(void)
@@ -105,10 +107,12 @@ export_syms(void)
 	 * reachable. When they are returned as an array, the
 	 * compiler can't assume anything, and can't remove them.
 	 */
-	#define EXPORT(symbol) ((void *)symbol),
+	#define EXPORT_FUN(symbol) ((void *)symbol),
+	#define EXPORT_VAR(symbol) ((void *)&symbol),
 	static void *symbols[] = {
 		#include "exports.h"
 	};
-	#undef EXPORT
+	#undef EXPORT_VAR
+	#undef EXPORT_FUN
 	return symbols;
 }
