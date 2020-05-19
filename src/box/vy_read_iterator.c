@@ -382,6 +382,9 @@ vy_read_iterator_scan_disk(struct vy_read_iterator *itr, uint32_t disk_src,
  * Restore the position of the active in-memory tree iterator
  * after a yield caused by a disk read and update 'next'
  * if necessary.
+ * @retval -1 In case of error (e.g. OOM);
+ * @retval 0 Successful execution;
+ * @retval 1 Restart of advance_iterator is required.
  */
 static NODISCARD int
 vy_read_iterator_restore_mem(struct vy_read_iterator *itr,
@@ -405,8 +408,14 @@ vy_read_iterator_restore_mem(struct vy_read_iterator *itr,
 		 * Memory trees are append-only so if the
 		 * source is not on top of the heap after
 		 * restoration, it was not before.
+		 * It may turn out that we read statement
+		 * which was prepared but not committed to
+		 * WAL. In such a rare case, we should restart
+		 * iterator_advance() to get the right key.
 		 */
-		assert(src->front_id < itr->front_id);
+		assert(src->front_id <= itr->front_id);
+		if (src->front_id == itr->front_id)
+			return 1;
 		return 0;
 	}
 	if (cmp < 0) {
@@ -529,8 +538,13 @@ rescan_disk:
 	 * as it is owned exclusively by the current fiber so the only
 	 * source to check is the active in-memory tree.
 	 */
-	if (vy_read_iterator_restore_mem(itr, &next) != 0)
+	int rc = vy_read_iterator_restore_mem(itr, &next);
+	if (rc < 0)
 		return -1;
+	if (rc > 0) {
+		vy_read_iterator_restore(itr);
+		goto restart;
+	}
 	/*
 	 * Scan the next range in case we transgressed the current
 	 * range's boundaries.
