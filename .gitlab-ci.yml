@@ -195,7 +195,7 @@ perf_bootstrap:
   script:
     - ${GITLAB_MAKE} perf_prepare
   after_script:
-    - ${GITLAB_MAKE} perf_cleanup
+    - ${GITLAB_MAKE} perf_cleanup_bootstrap
 
 # Testing part
 
