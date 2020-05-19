@@ -90,6 +90,10 @@ perf_prepare: perf_clone_benchs_repo
 perf_cleanup: perf_clone_benchs_repo
 	make -f bench-run/targets.mk cleanup
 
+# Remove temporary performance image after bootstrap phase
+perf_cleanup_bootstrap:
+	make -f bench-run/targets.mk cleanup
+
 # #################################
 # Run tests under a virtual machine
 # #################################
